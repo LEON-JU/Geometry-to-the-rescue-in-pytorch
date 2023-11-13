@@ -12,18 +12,31 @@ learning_rate = 0.001
 num_epochs = 10
 
 # 定义简单的Autoencoder模型
+'''
+Input size: 188 x 620
+'''
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
 
         # 编码器
         self.encoder = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(3, 96, 11, 4), # in_channels, out_channels, kernel_size, stride, padding
             nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),
+            nn.MaxPool2d(3, 2), # kernel_size, stride
+            # 减小卷积窗口，使用填充为2来使得输入与输出的高和宽一致，且增大输出通道数
+            nn.Conv2d(96, 256, 5, 1, 2),
             nn.ReLU(),
-            nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),
-            nn.ReLU()
+            nn.MaxPool2d(3, 2),
+            # 连续3个卷积层，且使用更小的卷积窗口。除了最后的卷积层外，进一步增大了输出通道数。
+            # 前两个卷积层后不使用池化层来减小输入的高和宽
+            nn.Conv2d(256, 384, 3, 1, 1),
+            nn.ReLU(),
+            nn.Conv2d(384, 384, 3, 1, 1),
+            nn.ReLU(),
+            nn.Conv2d(384, 256, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(3, 2)
         )
 
         # 解码器
