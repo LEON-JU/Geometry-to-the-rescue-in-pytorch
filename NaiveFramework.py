@@ -11,35 +11,59 @@ batch_size = 64
 learning_rate = 0.001
 num_epochs = 10
 
-# 定义简单的Autoencoder模型
 '''
+Autoencoder
 Input size: 188 x 620
 '''
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
 
-        # 编码器
-        self.encoder = nn.Sequential(
-            nn.Conv2d(3, 96, 11, 4), # in_channels, out_channels, kernel_size, stride, padding
-            nn.ReLU(),
-            nn.MaxPool2d(3, 2), # kernel_size, stride
-            # 减小卷积窗口，使用填充为2来使得输入与输出的高和宽一致，且增大输出通道数
-            nn.Conv2d(96, 256, 5, 1, 2),
-            nn.ReLU(),
-            nn.MaxPool2d(3, 2),
-            # 连续3个卷积层，且使用更小的卷积窗口。除了最后的卷积层外，进一步增大了输出通道数。
-            # 前两个卷积层后不使用池化层来减小输入的高和宽
-            nn.Conv2d(256, 384, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(384, 384, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(384, 256, 3, 1, 1),
-            nn.ReLU(),
-            nn.MaxPool2d(3, 2)
+        self.L1 = nn.Sequential(
+            # C1
+            nn.Conv2d(in_channels = 3, out_channels = 96, kernel_size = 11, stride = 4, padding = 0),
+            nn.ReLU()
         )
 
-        # 解码器
+        self.L2 = nn.Sequential(
+            # P1
+            nn.MaxPool2d(kernel_size = 3, stride = 2), 
+            # C2
+            nn.Conv2d(96, 256, 5, 1, 2),
+            nn.ReLU()
+        )
+
+        self.L3 = nn.Sequential(
+            # P2
+            nn.MaxPool2d(3, 2),
+            # C3
+            nn.Conv2d(256, 384, 3, 1, 1),
+            nn.ReLU()
+        )
+
+        self.L4 = nn.Sequential(
+            # C4
+            nn.Conv2d(384, 384, 3, 1, 1),
+            nn.ReLU()
+        )
+
+        self.L5 = nn.Sequential(
+            # C5
+            nn.Conv2d(384, 256, 3, 1, 1),
+            nn.ReLU()
+        )
+
+        self.L6 = nn.Sequential(
+            # C6
+            # TODO: 修改stride和paddings
+            nn.Conv2d(256, 2048, 5, stride = 0, padding=2),
+            nn.ReLU()
+        )
+
+
+        
+        # TODO: 实现FCN层
+
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),
             nn.ReLU(),
