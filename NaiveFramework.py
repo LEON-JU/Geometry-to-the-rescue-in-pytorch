@@ -54,28 +54,24 @@ class Autoencoder(nn.Module):
         )
 
         self.L6 = nn.Sequential(
-            # C6
+            # C6        
             # TODO: 修改stride和paddings
-            nn.Conv2d(256, 2048, 5, stride = 0, padding=2),
+            nn.Conv2d(256, 2048, 5, stride = 1, padding=2),
             nn.ReLU()
         )
 
-
-        
-        # TODO: 实现FCN层
-
-        self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(32, 3, kernel_size=4, stride=2, padding=1),
-            nn.Sigmoid()
+        self.L7 = nn.Sequential(
+            # C5
+            # TODO: 修改stride和paddings
+            nn.Conv2d(2048, 1, 1, 1, 1),
+            nn.ReLU()
         )
 
+        
+        # TODO: 实现L8,L9,L10,L11,L12
+
     def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
+        # TODO
         return x
 
 # 加载Kitti数据集
